@@ -7,7 +7,7 @@
         body {
             background-color: #121212;
             color: #e0e0e0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             margin: 0;
             padding: 20px;
         }
@@ -23,7 +23,7 @@
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             width: 100%;
-            max-width: 380px;
+            max-width: 400px;
             border: 1px solid #333;
         }
         h3 { 
@@ -33,24 +33,27 @@
             text-align: center;
             margin-top: 0;
         }
-        .gold-title { color: #ffd700; border-color: #ffd700; }
-        p { display: flex; justify-content: space-between; align-items: center; margin: 8px 0; font-size: 0.9rem; }
+        p { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; }
         input {
             background: #2d2d2d;
             border: 1px solid #444;
             color: #fff;
-            padding: 6px;
+            padding: 8px;
             border-radius: 5px;
-            width: 70px;
+            width: 80px;
             text-align: center;
             outline: none;
         }
         input:focus { border-color: #00ffcc; }
-        hr { border: 0; border-top: 1px dashed #444; margin: 15px 0; }
-        h2 { font-size: 1.1rem; margin: 5px 0; }
-        .profit { font-size: 1.3rem !important; font-weight: bold; margin-top: 10px; }
+        hr { border: 0; border-top: 1px dashed #444; margin: 20px 0; }
+        .res-row { margin: 15px 0; }
+        .res-title { font-weight: bold; color: #bbb; display: block; margin-bottom: 5px; }
+        .res-value { font-size: 1.2rem; display: block; }
+        .profit-pos { color: #00ff88; }
+        .profit-neg { color: #ff4444; }
+        .gold-txt { color: #ffd700; }
 
-        @media (max-width: 800px) {
+        @media (max-width: 850px) {
             .main-wrapper { flex-direction: column; align-items: center; }
         }
     </style>
@@ -59,70 +62,80 @@
 
 <div class="main-wrapper">
     <div class="container">
-        <h3>Normal Datachip</h3>
-        <p>Sell Price: <input type="text" id="d_sell" value="2500" oninput="updateTotal()"></p>
-        <p>Amount: <input type="text" id="d_amount" value="1" oninput="updateTotal()"></p>
-        <br>
-        <p>Iron Price: <input type="text" id="d_iron" value="500" oninput="updateTotal()"></p>
-        <p>Gold Price: <input type="text" id="d_gold" value="600" oninput="updateTotal()"></p>
-        <p>Chemical Price: <input type="text" id="d_chem" value="127" oninput="updateTotal()"></p>
-        <p>Glue Price: <input type="text" id="d_glue" value="18" oninput="updateTotal()"></p>
-        <p>Tape Price: <input type="text" id="d_tape" value="5" oninput="updateTotal()"></p>
-        <p>Scrap Metal Price: <input type="text" id="d_metal" value="13" oninput="updateTotal()"></p>
+        <h3>Material & Market Prices</h3>
+        <p>Normal Chip Sell: <input type="text" id="sell_norm" value="2500" oninput="update()"> </p>
+        <p>Gold Chip Sell: <input type="text" id="sell_gold" value="10000" oninput="update()"> </p>
         <hr>
-        <h2 id="d_totalSell">Total Sell: $0</h2>
-        <h2 id="d_totalSpend">Total Spend: $0</h2>
-        <h2 id="d_profit" class="profit">Total Profit: $0</h2>
+        <p>Iron: <input type="text" id="p_iron" value="500" oninput="update()"> </p>
+        <p>Gold: <input type="text" id="p_gold" value="600" oninput="update()"> </p>
+        <p>Diamond: <input type="text" id="p_diamond" value="2000" oninput="update()"> </p>
+        <p>Chemical: <input type="text" id="p_chem" value="127" oninput="update()"> </p>
+        <p>Glue: <input type="text" id="p_glue" value="18" oninput="update()"> </p>
+        <p>Tape: <input type="text" id="p_tape" value="5" oninput="update()"> </p>
+        <p>Scrap Metal: <input type="text" id="p_metal" value="13" oninput="update()"> </p>
     </div>
 
     <div class="container">
-        <h3 class="gold-title">Gold Datachip</h3>
-        <p>Sell Price: <input type="text" id="g_sell" value="10000" oninput="updateTotal()"></p>
-        <p>Amount: <input type="text" id="g_amount" value="1" oninput="updateTotal()"></p>
-        <br>
-        <p>Diamond Price: <input type="text" id="g_diamond" value="2000" oninput="updateTotal()"></p>
-        <p>Normal Chip Cost: <input type="text" id="g_normalCost" value="2500" oninput="updateTotal()"></p>
-        <p>Other Materials: <input type="text" id="g_other" value="0" oninput="updateTotal()"></p>
+        <h3>Profit Results</h3>
+        <p>Amount of Chips: <input type="text" id="amount" value="1" oninput="update()"> </p>
         <hr>
-        <h2 id="g_totalSell">Total Sell: $0</h2>
-        <h2 id="g_totalSpend">Total Spend: $0</h2>
-        <h2 id="g_profit" class="profit">Total Profit: $0</h2>
+        
+        <div class="res-row">
+            <span class="res-title">Normal Datachip Profit:</span>
+            <span id="res_norm" class="res-value">$0</span>
+        </div>
+
+        <div class="res-row">
+            <span class="res-title gold-txt">Gold Datachip Profit:</span>
+            <span id="res_gold" class="res-value">$0</span>
+        </div>
+        
+        <hr>
+        <div class="res-row">
+            <span class="res-title">Total Spend (Normal):</span>
+            <span id="spend_norm" class="res-value">$0</span>
+        </div>
+        <div class="res-row">
+            <span class="res-title gold-txt">Total Spend (Gold):</span>
+            <span id="spend_gold" class="res-value">$0</span>
+        </div>
     </div>
 </div>
 
 <script>
-    function updateTotal() {
-        function getVal(id) {
-            return parseFloat(document.getElementById(id).value) || 0;
-        }
+    function update() {
+        const getV = id => parseFloat(document.getElementById(id).value) || 0;
+        
+        const qty = getV('amount');
+        const iron = getV('p_iron');
+        const gold = getV('p_gold');
+        const diam = getV('p_diamond');
+        const chem = getV('p_chem');
+        const glue = getV('p_glue');
+        const tape = getV('p_tape');
+        const metal = getV('p_metal');
+        
+        const s_norm = getV('sell_norm');
+        const s_gold = getV('sell_gold');
 
-        const d_sell = getVal('d_sell');
-        const d_qty = getVal('d_amount');
-        const d_costPerUnit = (getVal('d_iron') * 2) + getVal('d_gold') + getVal('d_chem') + getVal('d_glue') + getVal('d_tape') + (getVal('d_metal') * 6);
-        const d_totalSell = d_sell * d_qty;
-        const d_totalSpend = d_costPerUnit * d_qty;
-        const d_totalProfit = d_totalSell - d_totalSpend;
+        const cost_norm = (iron * 2) + gold + chem + glue + tape + (metal * 6);
+        const profit_norm = (s_norm - cost_norm) * qty;
 
-        document.getElementById('d_totalSell').innerText = "Total Sell: $" + d_totalSell.toLocaleString();
-        document.getElementById('d_totalSpend').innerText = "Total Spend: $" + d_totalSpend.toLocaleString();
-        const d_profitEl = document.getElementById('d_profit');
-        d_profitEl.innerText = "Total Profit: $" + d_totalProfit.toLocaleString();
-        d_profitEl.style.color = d_totalProfit >= 0 ? "#00ff88" : "#ff4444";
+        const cost_gold = cost_norm + diam + (iron * 2) + gold + (chem * 2) + (glue * 2) + (tape * 2) + (metal * 4);
+        const profit_gold = (s_gold - cost_gold) * qty;
 
-        const g_sell = getVal('g_sell');
-        const g_qty = getVal('g_amount');
-        const g_costPerUnit = getVal('g_diamond') + getVal('g_normalCost') + getVal('g_other');
-        const g_totalSell = g_sell * g_qty;
-        const g_totalSpend = g_costPerUnit * g_qty;
-        const g_totalProfit = g_totalSell - g_totalSpend;
+        const setUI = (id, val, isProfit = false) => {
+            const el = document.getElementById(id);
+            el.innerText = "$" + Math.floor(val).toLocaleString();
+            if(isProfit) el.className = val >= 0 ? "res-value profit-pos" : "res-value profit-neg";
+        };
 
-        document.getElementById('g_totalSell').innerText = "Total Sell: $" + g_totalSell.toLocaleString();
-        document.getElementById('g_totalSpend').innerText = "Total Spend: $" + g_totalSpend.toLocaleString();
-        const g_profitEl = document.getElementById('g_profit');
-        g_profitEl.innerText = "Total Profit: $" + g_totalProfit.toLocaleString();
-        g_profitEl.style.color = g_totalProfit >= 0 ? "#ffd700" : "#ff4444";
+        setUI('res_norm', profit_norm, true);
+        setUI('res_gold', profit_gold, true);
+        setUI('spend_norm', cost_norm * qty);
+        setUI('spend_gold', cost_gold * qty);
     }
-    updateTotal();
+    update();
 </script>
 
 </body>
