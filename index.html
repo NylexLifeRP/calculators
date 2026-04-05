@@ -1,23 +1,29 @@
 <!DOCTYPE html>
 <html dir="ltr">
 <head>
-    <title>Datachip Calculator</title>
+    <title>Datachip Calculator Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             background-color: #121212;
             color: #e0e0e0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
+            margin: 0;
             padding: 20px;
+        }
+        .main-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
         }
         .container {
             background-color: #1e1e1e;
-            padding: 25px;
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            max-width: 400px;
             width: 100%;
+            max-width: 380px;
             border: 1px solid #333;
         }
         h3 { 
@@ -27,71 +33,97 @@
             text-align: center;
             margin-top: 0;
         }
-        p { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; }
+        .gold-title { color: #ffd700; border-color: #ffd700; }
+        p { display: flex; justify-content: space-between; align-items: center; margin: 8px 0; font-size: 0.9rem; }
         input {
             background: #2d2d2d;
             border: 1px solid #444;
             color: #fff;
-            padding: 8px;
+            padding: 6px;
             border-radius: 5px;
-            width: 80px;
+            width: 70px;
             text-align: center;
             outline: none;
         }
         input:focus { border-color: #00ffcc; }
-        hr { border: 0; border-top: 1px dashed #444; margin: 20px 0; }
-        h2 { font-size: 1.2rem; margin: 5px 0; }
-        #finalProfit { font-size: 1.5rem; font-weight: bold; margin-top: 15px; }
+        hr { border: 0; border-top: 1px dashed #444; margin: 15px 0; }
+        h2 { font-size: 1.1rem; margin: 5px 0; }
+        .profit { font-size: 1.3rem !important; font-weight: bold; margin-top: 10px; }
+
+        @media (max-width: 800px) {
+            .main-wrapper { flex-direction: column; align-items: center; }
+        }
     </style>
 </head>
 <body>
+
+<div class="main-wrapper">
     <div class="container">
-        <h3>Datachip Profit Calculator</h3>
-        
-        <p>Datachip Sell Price: <input type="text" id="datachipSellPrice" value="2500" oninput="updateTotal()"></p>
-        <p>Amount of Datachips: <input type="text" id="amount" value="1" oninput="updateTotal()"></p>
+        <h3>Normal Datachip</h3>
+        <p>Sell Price: <input type="text" id="d_sell" value="2500" oninput="updateTotal()"></p>
+        <p>Amount: <input type="text" id="d_amount" value="1" oninput="updateTotal()"></p>
         <br>
-        <p>Iron Price: <input type="text" id="ironPrice" value="500" oninput="updateTotal()"></p>
-        <p>Gold Price: <input type="text" id="goldPrice" value="600" oninput="updateTotal()"></p>
-        <p>Chemical Price: <input type="text" id="chemicalPrice" value="127" oninput="updateTotal()"></p>
-        <p>Glue Price: <input type="text" id="gluePrice" value="18" oninput="updateTotal()"></p>
-        <p>Tape Price: <input type="text" id="tapePrice" value="5" oninput="updateTotal()"></p>
-        <p>Scrap Metal Price: <input type="text" id="metalPrice" value="0" oninput="updateTotal()"></p>
-        
+        <p>Iron Price: <input type="text" id="d_iron" value="500" oninput="updateTotal()"></p>
+        <p>Gold Price: <input type="text" id="d_gold" value="600" oninput="updateTotal()"></p>
+        <p>Chemical Price: <input type="text" id="d_chem" value="127" oninput="updateTotal()"></p>
+        <p>Glue Price: <input type="text" id="d_glue" value="18" oninput="updateTotal()"></p>
+        <p>Tape Price: <input type="text" id="d_tape" value="5" oninput="updateTotal()"></p>
+        <p>Scrap Metal Price: <input type="text" id="d_metal" value="13" oninput="updateTotal()"></p>
         <hr>
-        <h2 id="totalSell">Total Sell: $0</h2>
-        <h2 id="totalSpend">Total Spend: $0</h2>
-        <h2 id="finalProfit">Total Profit: $0</h2>
+        <h2 id="d_totalSell">Total Sell: $0</h2>
+        <h2 id="d_totalSpend">Total Spend: $0</h2>
+        <h2 id="d_profit" class="profit">Total Profit: $0</h2>
     </div>
 
-    <script>
-        function updateTotal() {
-            function getVal(id) {
-                return parseFloat(document.getElementById(id).value) || 0;
-            }
-            
-            const sellPrice = getVal('datachipSellPrice');
-            const qty = getVal('amount');
-            const iron = getVal('ironPrice');
-            const gold = getVal('goldPrice');
-            const chem = getVal('chemicalPrice');
-            const glue = getVal('gluePrice');
-            const tape = getVal('tapePrice');
-            const metal = getVal('metalPrice');
+    <div class="container">
+        <h3 class="gold-title">Gold Datachip</h3>
+        <p>Sell Price: <input type="text" id="g_sell" value="10000" oninput="updateTotal()"></p>
+        <p>Amount: <input type="text" id="g_amount" value="1" oninput="updateTotal()"></p>
+        <br>
+        <p>Diamond Price: <input type="text" id="g_diamond" value="2000" oninput="updateTotal()"></p>
+        <p>Normal Chip Cost: <input type="text" id="g_normalCost" value="2500" oninput="updateTotal()"></p>
+        <p>Other Materials: <input type="text" id="g_other" value="0" oninput="updateTotal()"></p>
+        <hr>
+        <h2 id="g_totalSell">Total Sell: $0</h2>
+        <h2 id="g_totalSpend">Total Spend: $0</h2>
+        <h2 id="g_profit" class="profit">Total Profit: $0</h2>
+    </div>
+</div>
 
-            const totalSell = sellPrice * qty;
-            const costPerUnit = (iron * 2) + gold + chem + glue + tape + (metal * 6);
-            const totalSpend = costPerUnit * qty;
-            const totalProfit = totalSell - totalSpend;
-            
-            document.getElementById('totalSell').innerText = "Total Sell: $" + totalSell.toLocaleString();
-            document.getElementById('totalSpend').innerText = "Total Spend: $" + totalSpend.toLocaleString();
-            
-            const profitEl = document.getElementById('finalProfit');
-            profitEl.innerText = "Total Profit: $" + totalProfit.toLocaleString();
-            profitEl.style.color = totalProfit >= 0 ? "#00ff88" : "#ff4444";
+<script>
+    function updateTotal() {
+        function getVal(id) {
+            return parseFloat(document.getElementById(id).value) || 0;
         }
-        updateTotal();
-    </script>
+
+        const d_sell = getVal('d_sell');
+        const d_qty = getVal('d_amount');
+        const d_costPerUnit = (getVal('d_iron') * 2) + getVal('d_gold') + getVal('d_chem') + getVal('d_glue') + getVal('d_tape') + (getVal('d_metal') * 6);
+        const d_totalSell = d_sell * d_qty;
+        const d_totalSpend = d_costPerUnit * d_qty;
+        const d_totalProfit = d_totalSell - d_totalSpend;
+
+        document.getElementById('d_totalSell').innerText = "Total Sell: $" + d_totalSell.toLocaleString();
+        document.getElementById('d_totalSpend').innerText = "Total Spend: $" + d_totalSpend.toLocaleString();
+        const d_profitEl = document.getElementById('d_profit');
+        d_profitEl.innerText = "Total Profit: $" + d_totalProfit.toLocaleString();
+        d_profitEl.style.color = d_totalProfit >= 0 ? "#00ff88" : "#ff4444";
+
+        const g_sell = getVal('g_sell');
+        const g_qty = getVal('g_amount');
+        const g_costPerUnit = getVal('g_diamond') + getVal('g_normalCost') + getVal('g_other');
+        const g_totalSell = g_sell * g_qty;
+        const g_totalSpend = g_costPerUnit * g_qty;
+        const g_totalProfit = g_totalSell - g_totalSpend;
+
+        document.getElementById('g_totalSell').innerText = "Total Sell: $" + g_totalSell.toLocaleString();
+        document.getElementById('g_totalSpend').innerText = "Total Spend: $" + g_totalSpend.toLocaleString();
+        const g_profitEl = document.getElementById('g_profit');
+        g_profitEl.innerText = "Total Profit: $" + g_totalProfit.toLocaleString();
+        g_profitEl.style.color = g_totalProfit >= 0 ? "#ffd700" : "#ff4444";
+    }
+    updateTotal();
+</script>
+
 </body>
 </html>
