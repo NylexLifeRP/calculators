@@ -14,9 +14,8 @@
         .grid-wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto auto;
             gap: 20px;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
         .container {
@@ -26,7 +25,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             border: 1px solid #333;
         }
-        .prices-box { grid-row: span 4; }
+        .prices-box { grid-row: span 2; }
         h3 { border-bottom: 2px solid #333; padding-bottom: 10px; color: #00ffcc; text-align: center; margin-top: 0; }
         .gold-title { color: #ffd700; border-color: #ffd700; }
         p { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; font-size: 0.9rem; }
@@ -36,17 +35,20 @@
             color: #fff;
             padding: 8px;
             border-radius: 5px;
-            width: 70px;
+            width: 75px;
             text-align: center;
             outline: none;
         }
         input:focus { border-color: #00ffcc; }
         hr { border: 0; border-top: 1px dashed #444; margin: 15px 0; }
-        .res-val { font-size: 1.2rem; font-weight: bold; display: block; margin-top: 5px; }
+        .stat-row { margin: 8px 0; }
+        .stat-label { font-size: 0.85rem; color: #aaa; display: block; }
+        .stat-val { font-size: 1.1rem; font-weight: bold; display: block; }
+        .profit-val { font-size: 1.4rem; }
         .pos { color: #00ff88; }
         .neg { color: #ff4444; }
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
             .grid-wrapper { display: flex; flex-direction: column; align-items: center; }
         }
     </style>
@@ -54,9 +56,9 @@
 <body>
 
 <div class="grid-wrapper">
-    <!-- 1: PRICES (Span Left Side) -->
+    <!-- 1: PRICES -->
     <div class="container prices-box">
-        <h3>Prices</h3>
+        <h3>Material Prices</h3>
         <p>Norm Sell: <input type="text" id="s_n" value="2500" oninput="update()"></p>
         <p>Gold Sell: <input type="text" id="s_g" value="10000" oninput="update()"></p>
         <hr>
@@ -69,24 +71,42 @@
         <p>Scrap: <input type="text" id="p_m" value="13" oninput="update()"></p>
     </div>
 
-    <!-- 2: NORMAL CHIP (Top Right) -->
+    <!-- 2: NORMAL CHIP -->
     <div class="container">
         <h3>Normal Chip</h3>
         <p>Amount: <input type="text" id="a_n" value="1" oninput="update()"></p>
         <hr>
-        <span>Profit:</span>
-        <span id="res_n" class="res-val">$0</span>
-        <p style="color:#888; font-size:0.8rem;">Spend: <span id="sp_n">$0</span></p>
+        <div class="stat-row">
+            <span class="stat-label">Total Revenue (Sell):</span>
+            <span id="rev_n" class="stat-val">$0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Total Cost (Spend):</span>
+            <span id="sp_n" class="stat-val" style="color: #ffaa00;">$0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Net Profit:</span>
+            <span id="res_n" class="stat-val profit-val">$0</span>
+        </div>
     </div>
 
-    <!-- 3: GOLD CHIP (Bottom Right) -->
+    <!-- 3: GOLD CHIP -->
     <div class="container">
         <h3 class="gold-title">Gold Chip</h3>
         <p>Amount: <input type="text" id="a_g" value="1" oninput="update()"></p>
         <hr>
-        <span>Profit:</span>
-        <span id="res_g" class="res-val">$0</span>
-        <p style="color:#888; font-size:0.8rem;">Spend: <span id="sp_g">$0</span></p>
+        <div class="stat-row">
+            <span class="stat-label">Total Revenue (Sell):</span>
+            <span id="rev_g" class="stat-val">$0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Total Cost (Spend):</span>
+            <span id="sp_g" class="stat-val" style="color: #ffaa00;">$0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Net Profit:</span>
+            <span id="res_g" class="stat-val profit-val">$0</span>
+        </div>
     </div>
 </div>
 
@@ -98,19 +118,29 @@
         const sn = v('s_n'), sg = v('s_g');
         const an = v('a_n'), ag = v('a_g');
 
-        const costN = (iron * 2) + gold + chem + glue + tape + (metal * 6);
-        const profitN = (sn - costN) * an;
+        // Normal Logic
+        const costNPerUnit = (iron * 2) + gold + chem + glue + tape + (metal * 6);
+        const revN = sn * an;
+        const spendN = costNPerUnit * an;
+        const profitN = revN - spendN;
 
-        const costG = costN + diam + (iron * 2) + gold + (chem * 2) + (glue * 2) + (tape * 2) + (metal * 4);
-        const profitG = (sg - costG) * ag;
+        // Gold Logic
+        const costGPerUnit = costNPerUnit + diam + (iron * 2) + gold + (chem * 2) + (glue * 2) + (tape * 2) + (metal * 4);
+        const revG = sg * ag;
+        const spendG = costGPerUnit * ag;
+        const profitG = revG - spendG;
 
+        // UI Update Normal
+        document.getElementById('rev_n').innerText = "$" + Math.floor(revN).toLocaleString();
+        document.getElementById('sp_n').innerText = "$" + Math.floor(spendN).toLocaleString();
         document.getElementById('res_n').innerText = "$" + Math.floor(profitN).toLocaleString();
-        document.getElementById('res_n').className = "res-val " + (profitN >= 0 ? "pos" : "neg");
-        document.getElementById('sp_n').innerText = "$" + Math.floor(costN * an).toLocaleString();
+        document.getElementById('res_n').className = "stat-val profit-val " + (profitN >= 0 ? "pos" : "neg");
 
+        // UI Update Gold
+        document.getElementById('rev_g').innerText = "$" + Math.floor(revG).toLocaleString();
+        document.getElementById('sp_g').innerText = "$" + Math.floor(spendG).toLocaleString();
         document.getElementById('res_g').innerText = "$" + Math.floor(profitG).toLocaleString();
-        document.getElementById('res_g').className = "res-val " + (profitG >= 0 ? "pos" : "neg");
-        document.getElementById('sp_g').innerText = "$" + Math.floor(costG * ag).toLocaleString();
+        document.getElementById('res_g').className = "stat-val profit-val " + (profitG >= 0 ? "pos" : "neg");
     }
     update();
 </script>
