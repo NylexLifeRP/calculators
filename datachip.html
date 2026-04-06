@@ -139,7 +139,8 @@
     
     <script>
         const tooltip = document.getElementById('tooltip');
-
+        let recipeData = {};
+    
         function formatNum(num) {
             const sign = num < 0 ? "-" : "";
             num = Math.abs(num);
@@ -152,79 +153,52 @@
             }
             return sign + "$" + num.toFixed(2) + units[unitIdx];
         }
-
-        function setTooltip(el, lines, amount, type) {
-            el.addEventListener('mouseenter', e => {
-                tooltip.innerText = lines.map(([amt, name, price]) =>
-                    `${amt}x ${name} - ${price}`
-                ).join("\n");
-                const rect = el.getBoundingClientRect();
-                tooltip.style.left = rect.left + window.scrollX + "px";
-                tooltip.style.top = rect.bottom + window.scrollY + 5 + "px";
-                tooltip.style.opacity = 1;
-            });
-            el.addEventListener('mouseleave', () => tooltip.style.opacity = 0);
-
-            el.addEventListener('click', () => {
-                const text = lines.map(([amt, name]) => `${amt}x ${name}`).join("\n");
-                text = `${amount}x ${type}:\n` + text;
-                navigator.clipboard.writeText(text);
-            });
+    
+        function setupTooltip(id, lines, amount, type) {
+            const el = document.getElementById(id);
+            recipeData[id] = { lines, amount, type };
+    
+            if (!el.getAttribute('data-live')) {
+                el.addEventListener('mouseenter', () => {
+                    const d = recipeData[id];
+                    tooltip.innerText = d.lines.map(([a, n, p]) => `${a}x ${n} - ${p}`).join("\n");
+                    const r = el.getBoundingClientRect();
+                    tooltip.style.left = r.left + window.scrollX + "px";
+                    tooltip.style.top = r.bottom + window.scrollY + 5 + "px";
+                    tooltip.style.opacity = 1;
+                });
+                el.addEventListener('mouseleave', () => tooltip.style.opacity = 0);
+                el.addEventListener('click', () => {
+                    const d = recipeData[id];
+                    const txt = `${d.amount}x ${d.type}:\n` + d.lines.map(([a, n]) => `${a}x ${n}`).join("\n");
+                    navigator.clipboard.writeText(txt);
+                });
+                el.setAttribute('data-live', 'true');
+            }
         }
-
+    
         function update() {
-            const v = (id, def) => {
-                const val = parseFloat(document.getElementById(id).value);
-                return isNaN(val) ? def : val;
-            };
-
-            const iron = v('p_i', 450), gold = v('p_g', 500), diam = v('p_d', 600), 
-                  chem = v('p_c', 127), glue = v('p_gl', 18), tape = v('p_t', 5), metal = v('p_m', 0);
-
-            const sn = v('s_n', 2500), sg = v('s_g', 5000), an = v('a_n', 1), ag = v('a_g', 1);
-
-            const costN = (iron*2) + gold + chem + glue + tape + (metal*6);
-            const revN = sn*an, spendN = costN*an, profitN = revN-spendN;
-
-            const costG = costN + diam + (iron*2) + gold + (chem+glue+tape)*2 + (metal*4);
-            const revG = sg*ag, spendG = costG*ag, profitG = revG-spendG;
-
-            document.getElementById('rev_n').innerText = formatNum(revN);
-
-            const spNEl = document.getElementById('sp_n');
-            spNEl.innerText = formatNum(spendN);
-            setTooltip(spNEl, [
-                [2*an,"Iron", formatNum(iron*2*an)],
-                [1*an,"Gold", formatNum(gold*an)],
-                [1*an,"Soot Rubber", formatNum((chem+glue+tape)*an)],
-                [1*an,"Metal Sheet", formatNum(1*an)],
-                [4*an,"Metal Bar", formatNum(4*an)],
-                [2*an,"Scrap Metal", formatNum(2*an)]
-            ], an, "Datachip");
-
-            document.getElementById('res_n').innerText = formatNum(profitN);
-            document.getElementById('res_n').className =
-                "stat-val profit-val " + (profitN>=0?"pos":"neg");
-
-            document.getElementById('rev_g').innerText = formatNum(revG);
-
-            const spGEl = document.getElementById('sp_g');
-            spGEl.innerText = formatNum(spendG);
-            setTooltip(spGEl, [
-                [2*ag,"Iron", formatNum(iron*2*ag)],
-                [1*ag,"Gold", formatNum(gold*ag)],
-                [1*ag,"Diamond", formatNum(diam*ag)],
-                [1*ag,"Datachip", formatNum(costN*ag)],
-                [1*ag,"Soot Rubber", formatNum((chem+glue+tape)*2*ag)],
-                [1*ag,"Metal Sheet", formatNum(1*ag)],
-                [2*ag,"Scrap Metal", formatNum(2*ag)]
-            ], ag, "Gold Datachip");
-
-            document.getElementById('res_g').innerText = formatNum(profitG);
-            document.getElementById('res_g').className =
-                "stat-val profit-val " + (profitG>=0?"pos":"neg");
+            const v = (id) => parseFloat(document.getElementById(id).value) || 0;
+            const i = v('p_i'), g = v('p_g'), d = v('p_d'), c = v('p_c'), gl = v('p_gl'), t = v('p_t'), m = v('p_m');
+            const sn = v('s_n'), sg = v('s_g'), an = v('a_n'), ag = v('a_g');
+    
+            const cN = (i*2) + g + c + gl + t + (m*6);
+            const rN = sn*an, sN = cN*an, pN = rN-sN;
+            const cG = cN + d + (i*2) + g + (c+gl+t)*2 + (m*4);
+            const rG = sg*ag, sG = cG*ag, pG = rG-sG;
+    
+            document.getElementById('rev_n').innerText = formatNum(rN);
+            document.getElementById('sp_n').innerText = formatNum(sN);
+            setupTooltip('sp_n', [[2*an,"Iron",formatNum(i*2*an)],[an,"Gold",formatNum(g*an)],[an,"Soot Rubber",formatNum((c+gl+t)*an)],[an,"Metal Sheet","1x"],[4*an,"Metal Bar","4x"],[2*an,"Scrap",formatNum(m*2*an)]], an, "Datachip");
+            document.getElementById('res_n').innerText = formatNum(pN);
+            document.getElementById('res_n').className = "stat-val profit-val " + (pN>=0?"pos":"neg");
+    
+            document.getElementById('rev_g').innerText = formatNum(rG);
+            document.getElementById('sp_g').innerText = formatNum(sG);
+            setupTooltip('sp_g', [[2*ag,"Iron",formatNum(i*2*ag)],[ag,"Gold",formatNum(g*ag)],[ag,"Diamond",formatNum(d*ag)],[ag,"Datachip",formatNum(cN*ag)],[2*ag,"Soot Rubber",formatNum((c+gl+t)*2*ag)],[ag,"Metal Sheet","1x"],[2*ag,"Scrap",formatNum(m*2*ag)]], ag, "Gold Datachip");
+            document.getElementById('res_g').innerText = formatNum(pG);
+            document.getElementById('res_g').className = "stat-val profit-val " + (pG>=0?"pos":"neg");
         }
-
         update();
     </script>
 </body>
