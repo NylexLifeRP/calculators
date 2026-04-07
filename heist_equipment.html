@@ -4,7 +4,7 @@
     <title>Heist Gear Calculator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Forced Dark Theme - ignores device light/dark mode for consistency */
+        /* Forced Dark Theme */
         :root {
             --accent-red: #ff4444;
             --accent-blue: #00d2ff;
@@ -30,7 +30,6 @@
             min-height: 100vh;
         }
 
-        /* Tabs Navigation */
         .nav-tabs {
             display: flex;
             gap: 10px;
@@ -60,7 +59,6 @@
             box-shadow: 0 0 15px rgba(0, 210, 255, 0.15);
         }
 
-        /* Container & Consistency */
         .container {
             background-color: var(--panel-bg);
             padding: 24px;
@@ -70,12 +68,6 @@
             width: 100%;
             max-width: 450px;
             box-sizing: border-box;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         h3 { 
@@ -90,13 +82,11 @@
         .blue-title { color: var(--accent-blue); border-color: var(--accent-blue); }
         .red-title { color: var(--accent-red); border-color: var(--accent-red); }
 
-        /* Accordion / Collapsible */
         details {
             background: #252525;
             margin-bottom: 10px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
         }
         
         summary {
@@ -108,49 +98,60 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            outline: none;
         }
         summary::after { 
             content: '▼'; 
             font-size: 0.7rem; 
-            transition: transform 0.3s;
             color: var(--text-dim);
         }
-        details[open] summary::after { transform: rotate(180deg); }
         details[open] summary { border-bottom: 1px solid #3a3a3a; margin-bottom: 10px; }
         
         .category-content { padding: 0 15px 12px 15px; }
 
-        /* Layout Rows */
+        /* FIXED ALIGNMENT LOGIC */
         .item-row {
             display: grid;
-            grid-template-columns: 1fr 100px 75px;
-            gap: 12px;
+            /* Label takes all space, inputs take only what they need */
+            grid-template-columns: 1fr auto auto; 
+            gap: 10px;
             align-items: center;
             margin-bottom: 8px;
         }
-        .item-name { font-size: 0.95rem; color: #ccc; }
-        .item-price-label { text-align: center; color: var(--text-dim); font-size: 0.9rem; }
 
-        /* Inputs */
+        .item-name { font-size: 0.95rem; color: #ccc; }
+        
+        /* Consistent width for labels to keep inputs aligned */
+        .item-price-label { 
+            width: 85px; 
+            text-align: right; 
+            color: var(--text-dim); 
+            font-size: 0.9rem;
+            padding-right: 5px;
+        }
+
         input {
             background: var(--input-bg);
             border: 1px solid #444;
             color: #fff;
-            padding: 8px;
+            padding: 8px 5px;
             border-radius: 6px;
-            width: 100%;
             text-align: center;
             outline: none;
             font-family: monospace;
-            font-size: 1rem;
-            transition: border-color 0.2s;
+            box-sizing: border-box;
         }
-        input:focus { border-color: var(--accent-blue); }
-        .qty-input { color: var(--accent-green); border-color: #444; font-weight: bold; }
-        .price-input { border-color: #555; }
 
-        /* Total Section */
+        /* Specific widths to ensure right-side stickiness */
+        .qty-input { 
+            width: 65px; 
+            color: var(--accent-green); 
+            font-weight: bold; 
+        }
+        .price-input { 
+            width: 100px; 
+            border-color: #555; 
+        }
+
         .total-box {
             text-align: center;
             padding: 20px;
@@ -159,10 +160,8 @@
             margin-top: 20px;
             border: 1px solid var(--border-color);
         }
-        .total-label { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; letter-spacing: 1px; }
-        .total-val { font-size: 2.2rem; font-weight: bold; color: var(--accent-green); text-shadow: 0 0 15px rgba(0, 255, 136, 0.2); }
+        .total-val { font-size: 2.2rem; font-weight: bold; color: var(--accent-green); }
 
-        /* Global Buttons */
         .action-btn {
             width: 100%;
             background: transparent;
@@ -174,19 +173,11 @@
             cursor: pointer;
             font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.2s;
         }
-        .action-btn:hover { color: var(--accent-red); border-color: var(--accent-red); background: rgba(255, 68, 68, 0.05); }
+        .action-btn:hover { color: var(--accent-red); border-color: var(--accent-red); }
 
         .hidden { display: none; }
         .footer-credit { text-align: center; margin-top: auto; padding: 20px; color: #333; font-size: 0.8rem; }
-        
-        /* Mobile adjustment */
-        @media (max-width: 400px) {
-            .item-row { grid-template-columns: 1fr 85px 65px; gap: 8px; }
-            .container { padding: 15px; }
-        }
     </style>
 </head>
 <body>
@@ -199,8 +190,8 @@
     <div id="view-calc" class="container">
         <h3 class="blue-title">Gear Order</h3>
         
-        <div class="item-row" style="font-weight: bold; color: var(--text-dim); font-size: 0.7rem; text-transform: uppercase; padding: 0 15px 10px 15px;">
-            <span>Item</span><span style="text-align:center">Cost</span><span style="text-align:center">Qty</span>
+        <div class="item-row" style="font-weight: bold; color: var(--text-dim); font-size: 0.65rem; text-transform: uppercase; padding: 0 0 10px 0;">
+            <span>Item</span><span style="width:85px; text-align:right;">Cost</span><span style="width:65px; text-align:center;">Qty</span>
         </div>
 
         <details open>
@@ -234,7 +225,7 @@
         <button class="action-btn" onclick="resetQtys()">Clear Quantities</button>
 
         <div class="total-box">
-            <div class="total-label">TOTAL ESTIMATE</div>
+            <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 5px;">TOTAL ESTIMATE</div>
             <span id="total_cost" class="total-val">$0</span>
         </div>
     </div>
@@ -242,8 +233,8 @@
     <div id="view-price" class="container hidden">
         <h3 class="red-title">Price Settings</h3>
         
-        <div class="item-row" style="font-weight: bold; color: var(--text-dim); font-size: 0.7rem; text-transform: uppercase; padding: 0 15px 10px 15px;">
-            <span>Item Name</span><span></span><span style="text-align:center">Price ($)</span>
+        <div class="item-row" style="font-weight: bold; color: var(--text-dim); font-size: 0.65rem; text-transform: uppercase; padding: 0 0 10px 0;">
+            <span>Item Name</span><span></span><span style="width:100px; text-align:center;">Price ($)</span>
         </div>
 
         <details open>
@@ -273,8 +264,6 @@
                 <div class="item-row"><span class="item-name">Metal</span><span></span><input type="number" id="p_core_m" class="price-input" value="3000" oninput="update()"></div>
             </div>
         </details>
-        
-        <p style="text-align: center; font-size: 0.75rem; color: #555; margin-top: 20px;">Prices auto-save to browser memory.</p>
     </div>
 
     <div class="footer-credit">Heist Ops Management System &copy; 2026 ninioteam.dev</div>
@@ -301,7 +290,6 @@
     
         function update() {
             const v = (id) => parseFloat(document.getElementById(id).value) || 0;
-            
             const prices = {
                 p_drill: v('p_drill'), p_monitor: v('p_monitor'), p_saw: v('p_saw'), p_belt: v('p_belt'),
                 p_bit_g: v('p_bit_g'), p_bit_r: v('p_bit_r'), p_bit_m: v('p_bit_m'),
@@ -310,7 +298,6 @@
 
             localStorage.setItem('heistPrices', JSON.stringify(prices));
 
-            // Sync Display Prices in Calculator
             const displayMap = {
                 'dp_drill': prices.p_drill, 'dp_monitor': prices.p_monitor, 'dp_saw': prices.p_saw, 'dp_belt': prices.p_belt,
                 'dp_bit_g': prices.p_bit_g, 'dp_bit_r': prices.p_bit_r, 'dp_bit_m': prices.p_bit_m,
