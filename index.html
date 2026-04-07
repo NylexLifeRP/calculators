@@ -4,91 +4,250 @@
     <title>LifeRP Calculators</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        :root {
+            --bg-color: #0b0e11;
+            --card-bg: #161b22;
+            --accent-primary: #00ffcc;
+            --accent-secondary: #0099ff;
+            --text-main: #e6edf3;
+            --text-dim: #8b949e;
+            --border-color: #30363d;
+            --glow: rgba(0, 255, 204, 0.15);
+        }
+
         body {
-            background-color: #121212;
-            color: #e0e0e0;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             align-items: center;
+            background: radial-gradient(circle at top center, #1a1f26 0%, #0b0e11 100%);
         }
+
         .container {
             width: 100%;
-            max-width: 500px;
-            padding: 50px 20px;
+            max-width: 600px;
+            padding: 60px 24px;
             box-sizing: border-box;
             flex: 1;
         }
+
         h1 {
-            font-size: 2.2rem;
+            font-size: 2.8rem;
+            font-weight: 800;
             text-align: center;
-            background: linear-gradient(to right, #00ffcc, #0099ff);
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 40px;
+            margin-bottom: 8px;
         }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-dim);
+            margin-bottom: 40px;
+            font-size: 1rem;
+        }
+
+        /* SEARCH BAR */
+        .search-box {
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: #fff;
+            margin-bottom: 30px;
+            outline: none;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .search-box:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 4px var(--glow);
+            transform: translateY(-2px);
+        }
+
+        .calc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* CARD STYLES */
         .calc-card {
-            background-color: #1e1e1e;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 25px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
             text-decoration: none;
-            color: #e0e0e0;
+            color: var(--text-main);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: 0.2s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
         }
+
+        .calc-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
         .calc-card:hover {
-            border-color: #00ffcc;
-            transform: translateY(-3px);
-            background-color: #252525;
+            border-color: #444c56;
+            transform: scale(1.02);
+            background-color: #1c2128;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
+
+        .calc-card:hover::before {
+            opacity: 1;
+        }
+
         .calc-info h3 {
             margin: 0;
-            color: #00ffcc;
-            font-size: 1.3rem;
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 600;
+            transition: color 0.2s;
         }
+
+        .calc-card:hover h3 {
+            color: var(--accent-primary);
+        }
+
         .calc-info p {
-            margin: 8px 0 0 0;
-            font-size: 0.9rem;
-            color: #888;
+            margin: 6px 0 0 0;
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            line-height: 1.4;
         }
+
         .arrow {
-            font-size: 1.5rem;
-            color: #00ffcc;
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            background: #21262d;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
         }
+
+        .calc-card:hover .arrow {
+            background: var(--accent-primary);
+            color: #000;
+            transform: translateX(5px);
+        }
+
         footer {
-            padding: 30px 0;
-            font-size: 0.85rem;
-            color: #444;
+            padding: 40px 0;
+            font-size: 0.8rem;
+            color: var(--text-dim);
             text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.6;
+        }
+
+        .no-results {
+            text-align: center;
+            color: var(--text-dim);
+            margin-top: 40px;
+            padding: 20px;
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
         }
     </style>
 </head>
 <body>
+
     <div class="container">
         <h1>LifeRP Calculators</h1>
-        <a href="https://nylexliferp.github.io/calculators/datachip" class="calc-card">
-            <div class="calc-info">
-                <h3>Datachip Price Calculator</h3>
-                <p>Calculate profits & prices for Normal and Gold datachips</p>
-            </div>
-            <div class="arrow">➜</div>
-        </a>
-        <a href="https://nylexliferp.github.io/calculators/heist_equipment" class="calc-card">
-            <div class="calc-info">
-                <h3>Heist Equipment Cost Calculator</h3>
-                <p>Calculate a recipe of heist equipment and spits out the cost</p>
-            </div>
-            <div class="arrow">➜</div>
-        </a>
+        <p class="subtitle">Quick tools for the LifeRP universe</p>
+
+        <input type="text" id="search" class="search-box" placeholder="Search calculators...">
+
+        <div id="calcList" class="calc-list"></div>
+        <div id="noResults" class="no-results" style="display:none;">No calculators found</div>
     </div>
+
     <footer>
         All Rights Reserved &copy; 2026 ninioteam.dev
     </footer>
+
+<script>
+const calculators = [
+    {
+        name: "Datachip Price Calculator",
+        desc: "Calculate profits & prices for Normal and Gold datachips",
+        link: "https://nylexliferp.github.io/calculators/datachip"
+    },
+    {
+        name: "Heist Equipment Cost Calculator",
+        desc: "Calculate recipes and output total costs for heist gear",
+        link: "https://nylexliferp.github.io/calculators/heist_equipment"
+    }
+];
+
+const list = document.getElementById("calcList");
+const search = document.getElementById("search");
+const noResults = document.getElementById("noResults");
+
+function render(items) {
+    list.innerHTML = "";
+
+    if (items.length === 0) {
+        noResults.style.display = "block";
+        return;
+    }
+
+    noResults.style.display = "none";
+
+    items.forEach(calc => {
+        const el = document.createElement("a");
+        el.href = calc.link;
+        el.className = "calc-card";
+
+        el.innerHTML = `
+            <div class="calc-info">
+                <h3>${calc.name}</h3>
+                <p>${calc.desc}</p>
+            </div>
+            <div class="arrow">➜</div>
+        `;
+
+        list.appendChild(el);
+    });
+}
+
+search.addEventListener("input", () => {
+    const value = search.value.toLowerCase();
+    const filtered = calculators.filter(c =>
+        c.name.toLowerCase().includes(value) ||
+        c.desc.toLowerCase().includes(value)
+    );
+    render(filtered);
+});
+
+// initial render
+render(calculators);
+</script>
+
 </body>
 </html>
