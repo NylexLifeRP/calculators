@@ -4,6 +4,19 @@
     <title>Heist Gear Calculator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        /* Removes arrows from number inputs */
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        
+        /* Firefox */
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+        
         /* Forced Dark Theme */
         :root {
             --accent-red: #ff4444;
@@ -30,12 +43,21 @@
             min-height: 100vh;
         }
 
+        /* NEW: Wrapper for side-by-side layout */
+        .main-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 450px;
+            align-items: center;
+        }
+
         .nav-tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
             width: 100%;
-            max-width: 450px;
         }
 
         .tab-btn {
@@ -66,7 +88,6 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.6);
             border: 1px solid var(--border-color);
             width: 100%;
-            max-width: 450px;
             box-sizing: border-box;
         }
 
@@ -108,10 +129,8 @@
         
         .category-content { padding: 0 15px 12px 15px; }
 
-        /* FIXED ALIGNMENT LOGIC */
         .item-row {
             display: grid;
-            /* Label takes all space, inputs take only what they need */
             grid-template-columns: 1fr auto auto; 
             gap: 10px;
             align-items: center;
@@ -120,7 +139,6 @@
 
         .item-name { font-size: 0.95rem; color: #ccc; }
         
-        /* Consistent width for labels to keep inputs aligned */
         .item-price-label { 
             width: 85px; 
             text-align: right; 
@@ -141,16 +159,8 @@
             box-sizing: border-box;
         }
 
-        /* Specific widths to ensure right-side stickiness */
-        .qty-input { 
-            width: 65px; 
-            color: var(--accent-green); 
-            font-weight: bold; 
-        }
-        .price-input { 
-            width: 100px; 
-            border-color: #555; 
-        }
+        .qty-input { width: 65px; color: var(--accent-green); font-weight: bold; }
+        .price-input { width: 100px; border-color: #555; }
 
         .total-box {
             text-align: center;
@@ -178,6 +188,22 @@
 
         .hidden { display: none; }
         .footer-credit { text-align: center; margin-top: auto; padding: 20px; color: #333; font-size: 0.8rem; }
+
+        /* DESKTOP STYLES (Screen wider than 900px) */
+        @media (min-width: 900px) {
+            .main-wrapper {
+                flex-direction: row;
+                max-width: 950px;
+                align-items: flex-start;
+            }
+            .nav-tabs {
+                display: none; /* Hide tabs on desktop */
+            }
+            #view-calc, #view-price {
+                display: block !important; /* Show both panels */
+                flex: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -187,93 +213,96 @@
         <button id="btn-price" class="tab-btn" onclick="showView('price')">Prices</button>
     </div>
 
-    <div id="view-calc" class="container">
-        <h3 class="blue-title">Gear Order</h3>
-        
-        <div class="item-row" style="font-weight: bold; color: var(--text-dim); font-size: 0.65rem; text-transform: uppercase; padding: 0 0 10px 0;">
-            <span>Item</span><span style="width:85px; text-align:right;">Cost</span><span style="width:65px; text-align:center;">Qty</span>
+    <div class="main-wrapper">
+        <div id="view-calc" class="container">
+            <h3 class="blue-title">Gear Order</h3>
+            
+            <div class="item-row" style="font-weight: bold; color: var(--text-dim); font-size: 0.65rem; text-transform: uppercase; padding: 0 0 10px 0;">
+                <span>Item</span><span style="width:85px; text-align:right;">Cost</span><span style="width:65px; text-align:center;">Qty</span>
+            </div>
+
+            <details open>
+                <summary>Hardware</summary>
+                <div class="category-content">
+                    <div class="item-row"><span class="item-name">Drill</span><span id="dp_drill" class="item-price-label">$0</span><input type="number" id="q_drill" class="qty-input" value="0" oninput="update()"></div>
+                    <div class="item-row"><span class="item-name">Monitor</span><span id="dp_monitor" class="item-price-label">$0</span><input type="number" id="q_monitor" class="qty-input" value="0" oninput="update()"></div>
+                    <div class="item-row"><span class="item-name">Millsaw</span><span id="dp_saw" class="item-price-label">$0</span><input type="number" id="q_saw" class="qty-input" value="0" oninput="update()"></div>
+                    <div class="item-row"><span class="item-name">Belt</span><span id="dp_belt" class="item-price-label">$0</span><input type="number" id="q_belt" class="qty-input" value="0" oninput="update()"></div>
+                </div>
+            </details>
+
+            <details open>
+                <summary>Drill Bits</summary>
+                <div class="category-content">
+                    <div class="item-row"><span class="item-name">Gold Bit</span><span id="dp_bit_g" class="item-price-label">$0</span><input type="number" id="q_bit_g" class="qty-input" value="0" oninput="update()"></div>
+                    <div class="item-row"><span class="item-name">Reinf. Bit</span><span id="dp_bit_r" class="item-price-label">$0</span><input type="number" id="q_bit_r" class="qty-input" value="0" oninput="update()"></div>
+                    <div class="item-row"><span class="item-name">Metal Bit</span><span id="dp_bit_m" class="item-price-label">$0</span><input type="number" id="q_bit_m" class="qty-input" value="0" oninput="update()"></div>
+                </div>
+            </details>
+
+            <details open>
+                <summary>Power Cores</summary>
+                <div class="category-content">
+                    <div class="item-row"><span class="item-name">Gold Core</span><span id="dp_core_g" class="item-price-label">$0</span><input type="number" id="q_core_g" class="qty-input" value="0" oninput="update()"></div>
+                    <div class="item-row"><span class="item-name">Iron Core</span><span id="dp_core_i" class="item-price-label">$0</span><input type="number" id="q_core_i" class="qty-input" value="0" oninput="update()"></div>
+                    <div class="item-row"><span class="item-name">Metal Core</span><span id="dp_core_m" class="item-price-label">$0</span><input type="number" id="q_core_m" class="qty-input" value="0" oninput="update()"></div>
+                </div>
+            </details>
+
+            <button class="action-btn" onclick="resetQtys()">Clear Quantities</button>
+
+            <div class="total-box">
+                <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 5px;">TOTAL ESTIMATE</div>
+                <span id="total_cost" class="total-val">$0</span>
+            </div>
         </div>
 
-        <details open>
-            <summary>Hardware</summary>
-            <div class="category-content">
-                <div class="item-row"><span class="item-name">Drill</span><span id="dp_drill" class="item-price-label">$0</span><input type="number" id="q_drill" class="qty-input" value="0" oninput="update()"></div>
-                <div class="item-row"><span class="item-name">Monitor</span><span id="dp_monitor" class="item-price-label">$0</span><input type="number" id="q_monitor" class="qty-input" value="0" oninput="update()"></div>
-                <div class="item-row"><span class="item-name">Millsaw</span><span id="dp_saw" class="item-price-label">$0</span><input type="number" id="q_saw" class="qty-input" value="0" oninput="update()"></div>
-                <div class="item-row"><span class="item-name">Belt</span><span id="dp_belt" class="item-price-label">$0</span><input type="number" id="q_belt" class="qty-input" value="0" oninput="update()"></div>
+        <div id="view-price" class="container hidden">
+            <h3 class="red-title">Price Settings</h3>
+            
+            <div class="item-row" style="font-weight: bold; color: var(--text-dim); font-size: 0.65rem; text-transform: uppercase; padding: 0 0 10px 0;">
+                <span>Item Name</span><span></span><span style="width:100px; text-align:center;">Price ($)</span>
             </div>
-        </details>
 
-        <details open>
-            <summary>Drill Bits</summary>
-            <div class="category-content">
-                <div class="item-row"><span class="item-name">Gold Bit</span><span id="dp_bit_g" class="item-price-label">$0</span><input type="number" id="q_bit_g" class="qty-input" value="0" oninput="update()"></div>
-                <div class="item-row"><span class="item-name">Reinf. Bit</span><span id="dp_bit_r" class="item-price-label">$0</span><input type="number" id="q_bit_r" class="qty-input" value="0" oninput="update()"></div>
-                <div class="item-row"><span class="item-name">Metal Bit</span><span id="dp_bit_m" class="item-price-label">$0</span><input type="number" id="q_bit_m" class="qty-input" value="0" oninput="update()"></div>
-            </div>
-        </details>
+            <details open>
+                <summary>Hardware Prices</summary>
+                <div class="category-content">
+                    <div class="item-row"><span class="item-name">Drill</span><span></span><input type="number" id="p_drill" class="price-input" value="30000" oninput="update()"></div>
+                    <div class="item-row"><span class="item-name">Monitor</span><span></span><input type="number" id="p_monitor" class="price-input" value="10000" oninput="update()"></div>
+                    <div class="item-row"><span class="item-name">Millsaw</span><span></span><input type="number" id="p_saw" class="price-input" value="40000" oninput="update()"></div>
+                    <div class="item-row"><span class="item-name">Belt</span><span></span><input type="number" id="p_belt" class="price-input" value="5000" oninput="update()"></div>
+                </div>
+            </details>
 
-        <details open>
-            <summary>Power Cores</summary>
-            <div class="category-content">
-                <div class="item-row"><span class="item-name">Gold Core</span><span id="dp_core_g" class="item-price-label">$0</span><input type="number" id="q_core_g" class="qty-input" value="0" oninput="update()"></div>
-                <div class="item-row"><span class="item-name">Iron Core</span><span id="dp_core_i" class="item-price-label">$0</span><input type="number" id="q_core_i" class="qty-input" value="0" oninput="update()"></div>
-                <div class="item-row"><span class="item-name">Metal Core</span><span id="dp_core_m" class="item-price-label">$0</span><input type="number" id="q_core_m" class="qty-input" value="0" oninput="update()"></div>
-            </div>
-        </details>
+            <details open>
+                <summary>Bit Prices</summary>
+                <div class="category-content">
+                    <div class="item-row"><span class="item-name">Gold</span><span></span><input type="number" id="p_bit_g" class="price-input" value="12500" oninput="update()"></div>
+                    <div class="item-row"><span class="item-name">Reinf.</span><span></span><input type="number" id="p_bit_r" class="price-input" value="7500" oninput="update()"></div>
+                    <div class="item-row"><span class="item-name">Metal</span><span></span><input type="number" id="p_bit_m" class="price-input" value="5000" oninput="update()"></div>
+                </div>
+            </details>
 
-        <button class="action-btn" onclick="resetQtys()">Clear Quantities</button>
-
-        <div class="total-box">
-            <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 5px;">TOTAL ESTIMATE</div>
-            <span id="total_cost" class="total-val">$0</span>
+            <details open>
+                <summary>Core Prices</summary>
+                <div class="category-content">
+                    <div class="item-row"><span class="item-name">Gold</span><span></span><input type="number" id="p_core_g" class="price-input" value="10000" oninput="update()"></div>
+                    <div class="item-row"><span class="item-name">Iron</span><span></span><input type="number" id="p_core_i" class="price-input" value="5000" oninput="update()"></div>
+                    <div class="item-row"><span class="item-name">Metal</span><span></span><input type="number" id="p_core_m" class="price-input" value="3000" oninput="update()"></div>
+                </div>
+            </details>
         </div>
-    </div>
-
-    <div id="view-price" class="container hidden">
-        <h3 class="red-title">Price Settings</h3>
-        
-        <div class="item-row" style="font-weight: bold; color: var(--text-dim); font-size: 0.65rem; text-transform: uppercase; padding: 0 0 10px 0;">
-            <span>Item Name</span><span></span><span style="width:100px; text-align:center;">Price ($)</span>
-        </div>
-
-        <details open>
-            <summary>Hardware Prices</summary>
-            <div class="category-content">
-                <div class="item-row"><span class="item-name">Drill</span><span></span><input type="number" id="p_drill" class="price-input" value="30000" oninput="update()"></div>
-                <div class="item-row"><span class="item-name">Monitor</span><span></span><input type="number" id="p_monitor" class="price-input" value="10000" oninput="update()"></div>
-                <div class="item-row"><span class="item-name">Millsaw</span><span></span><input type="number" id="p_saw" class="price-input" value="40000" oninput="update()"></div>
-                <div class="item-row"><span class="item-name">Belt</span><span></span><input type="number" id="p_belt" class="price-input" value="5000" oninput="update()"></div>
-            </div>
-        </details>
-
-        <details open>
-            <summary>Bit Prices</summary>
-            <div class="category-content">
-                <div class="item-row"><span class="item-name">Gold</span><span></span><input type="number" id="p_bit_g" class="price-input" value="12500" oninput="update()"></div>
-                <div class="item-row"><span class="item-name">Reinf.</span><span></span><input type="number" id="p_bit_r" class="price-input" value="7500" oninput="update()"></div>
-                <div class="item-row"><span class="item-name">Metal</span><span></span><input type="number" id="p_bit_m" class="price-input" value="5000" oninput="update()"></div>
-            </div>
-        </details>
-
-        <details open>
-            <summary>Core Prices</summary>
-            <div class="category-content">
-                <div class="item-row"><span class="item-name">Gold</span><span></span><input type="number" id="p_core_g" class="price-input" value="10000" oninput="update()"></div>
-                <div class="item-row"><span class="item-name">Iron</span><span></span><input type="number" id="p_core_i" class="price-input" value="5000" oninput="update()"></div>
-                <div class="item-row"><span class="item-name">Metal</span><span></span><input type="number" id="p_core_m" class="price-input" value="3000" oninput="update()"></div>
-            </div>
-        </details>
-    </div>
-
-    <div class="footer-credit">Heist Ops Management System &copy; 2026 ninioteam.dev</div>
+    </div> <div class="footer-credit">Heist Ops Management System &copy; 2026 ninioteam.dev</div>
     
     <script>
         function showView(view) {
-            document.getElementById('view-calc').classList.toggle('hidden', view !== 'calc');
-            document.getElementById('view-price').classList.toggle('hidden', view !== 'price');
-            document.getElementById('btn-calc').classList.toggle('active', view === 'calc');
-            document.getElementById('btn-price').classList.toggle('active', view === 'price');
+            // Only toggle classes if we are on a small screen
+            if (window.innerWidth < 900) {
+                document.getElementById('view-calc').classList.toggle('hidden', view !== 'calc');
+                document.getElementById('view-price').classList.toggle('hidden', view !== 'price');
+                document.getElementById('btn-calc').classList.toggle('active', view === 'calc');
+                document.getElementById('btn-price').classList.toggle('active', view === 'price');
+            }
         }
 
         window.onload = function() {
